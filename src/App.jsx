@@ -39,7 +39,7 @@ function sortItems(goods, { sortType, queue }) {
   }
 
   if (queue) {
-    items.reverse(); // Зворотний порядок, якщо queue = true
+    items.reverse();
   }
 
   return items;
@@ -53,9 +53,12 @@ export const App = () => {
     queue: queueField,
   });
 
+  const isResetVisible = sortField || queueField;
+
   return (
     <div className="section content">
       <div className="buttons">
+        {/* Кнопка сортування за алфавітом */}
         <button
           type="button"
           className={classnames('button', 'is-info', {
@@ -90,7 +93,8 @@ export const App = () => {
           Reverse
         </button>
 
-        {sortField && (
+        {/* Кнопка Reset */}
+        {isResetVisible && (
           <button
             type="button"
             className="button is-danger is-light"
