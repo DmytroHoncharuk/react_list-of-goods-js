@@ -6,8 +6,6 @@ import { GoodList } from './GoodList';
 
 const SORT_BY_LENGTH = 'length';
 const SORT_BY_ALPHABET = 'alphabet';
-const SORT_ASCENDING = '1';
-const SORT_DESCENDING = '2';
 
 export const goodsFromServer = [
   'Dumplings',
@@ -22,47 +20,33 @@ export const goodsFromServer = [
   'Garlic',
 ];
 
-function sortItems(goods, { sortType, queue = '1' }) {
+function sortItems(goods, { sortType, queue }) {
   const items = [...goods];
 
   if (sortType) {
-    // eslint-disable-next-line array-callback-return,consistent-return
     items.sort((a, b) => {
       switch (sortType) {
         case SORT_BY_ALPHABET:
-          if (queue === SORT_ASCENDING) {
-            return a.localeCompare(b);
-          }
-
-          if (queue === SORT_DESCENDING) {
-            return b.localeCompare(a);
-          }
-
-          break;
+          return a.localeCompare(b);
 
         case SORT_BY_LENGTH:
-          if (queue === SORT_ASCENDING) {
-            return a.length - b.length;
-          }
+          return a.length - b.length;
 
-          if (queue === SORT_DESCENDING) {
-            return b.length - a.length;
-          }
-
-          break;
-
-        // eslint-disable-next-line no-fallthrough
         default:
           return 0;
       }
     });
   }
 
+  if (queue) {
+    items.reverse(); // Зворотний порядок, якщо queue = true
+  }
+
   return items;
 }
 
 export const App = () => {
-  const [queueField, setQueueField] = useState(SORT_ASCENDING);
+  const [queueField, setQueueField] = useState(false); // Булеве значення
   const [sortField, setSortField] = useState('');
   const visibleGoods = sortItems(goodsFromServer, {
     sortType: sortField,
@@ -99,14 +83,9 @@ export const App = () => {
         <button
           type="button"
           className={classnames('button', 'is-warning', {
-            'is-light': queueField === SORT_ASCENDING,
+            'is-light': !queueField, // Активний стан, якщо queueField = false
           })}
-          onClick={() => {
-            // eslint-disable-next-line no-unused-expressions
-            queueField === SORT_DESCENDING
-              ? setQueueField(SORT_ASCENDING)
-              : setQueueField(SORT_DESCENDING);
-          }}
+          onClick={() => setQueueField((prev) => !prev)} // Інвертуємо значення
         >
           Reverse
         </button>
@@ -116,8 +95,8 @@ export const App = () => {
             type="button"
             className="button is-danger is-light"
             onClick={() => {
-              setSortField('');
-              setQueueField(SORT_ASCENDING);
+              setSortField(''); // Скидаємо поле сортування
+              setQueueField(false); // Повертаємо початковий стан
             }}
           >
             Reset
